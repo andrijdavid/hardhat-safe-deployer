@@ -8,11 +8,12 @@ const ethers_1 = require("ethers");
 const execution_1 = require("./execution");
 const axios_1 = __importDefault(require("axios"));
 class SafeProviderAdapter {
-    constructor(wrapped, signer, safe, serviceUrl) {
-        this.submittedTxs = new Map();
+    constructor(wrapped, signer, safe, chainId, serviceUrl) {
         this.createLibAddress = "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4";
         this.createLibInterface = new ethers_1.utils.Interface(["function performCreate(uint256,bytes)"]);
         this.safeInterface = new ethers_1.utils.Interface(["function nonce() view returns(uint256)"]);
+        this.submittedTxs = new Map();
+        this.chainId = chainId;
         this.wrapped = wrapped;
         this.signer = signer;
         this.safe = ethers_1.utils.getAddress(safe);
@@ -50,7 +51,7 @@ class SafeProviderAdapter {
                 operation = 1;
             }
             const nonce = (await this.safeContract.nonce()).toNumber();
-            const safeTx = execution_1.buildSafeTransaction({
+            const safeTx = (0, execution_1.buildSafeTransaction)({
                 to: ethers_1.utils.getAddress(tx.to),
                 data: tx.data,
                 value: tx.value,
@@ -60,8 +61,11 @@ class SafeProviderAdapter {
             });
             const estimation = await this.estimateSafeTx(this.safe, safeTx);
             safeTx.safeTxGas = estimation.safeTxGas;
-            const safeTxHash = ethers_1.utils._TypedDataEncoder.hash({ verifyingContract: this.safe }, execution_1.EIP712_SAFE_TX_TYPE, safeTx);
-            const signature = await execution_1.signHash(this.signer, safeTxHash);
+            const safeTxHash = ethers_1.utils._TypedDataEncoder.hash({
+                chainId: this.chainId,
+                verifyingContract: this.safe,
+            }, execution_1.EIP712_SAFE_TX_TYPE, safeTx);
+            const signature = await (0, execution_1.signHash)(this.signer, safeTxHash);
             await this.proposeTx(safeTxHash, safeTx, signature);
             this.submittedTxs.set(safeTxHash, {
                 from: this.safe,

@@ -3,7 +3,7 @@ import { utils, Contract } from "ethers";
 import { SafeSignature, SafeTransaction } from "./execution";
 import { Wallet } from "@ethersproject/wallet";
 export declare class SafeProviderAdapter implements EthereumProvider {
-    submittedTxs: Map<string, any>;
+    chainId: number;
     createLibAddress: string;
     createLibInterface: utils.Interface;
     safeInterface: utils.Interface;
@@ -11,8 +11,9 @@ export declare class SafeProviderAdapter implements EthereumProvider {
     safe: string;
     serviceUrl: string;
     signer: Wallet;
+    submittedTxs: Map<string, any>;
     wrapped: any;
-    constructor(wrapped: any, signer: Wallet, safe: string, serviceUrl?: string);
+    constructor(wrapped: any, signer: Wallet, safe: string, chainId: number, serviceUrl?: string);
     estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any>;
     getSafeTxDetails(safeTxHash: string): Promise<any>;
     proposeTx(safeTxHash: string, safeTx: SafeTransaction, signature: SafeSignature): Promise<String>;
