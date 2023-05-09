@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SafeProviderAdapter = void 0;
-const ethers_1 = require("ethers");
 const execution_1 = require("./execution");
+const ethers_1 = require("ethers");
 const axios_1 = __importDefault(require("axios"));
 class SafeProviderAdapter {
     constructor(wrapped, signer, safe, chainId, serviceUrl) {

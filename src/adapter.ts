@@ -1,13 +1,13 @@
 import { EthereumProvider, JsonRpcRequest, JsonRpcResponse, RequestArguments } from "hardhat/types";
 import { buildSafeTransaction, EIP712_SAFE_TX_TYPE, SafeSignature, SafeTransaction, signHash } from "./execution"
-import { Wallet, Interface, getAddress, Contract, TypedDataEncoder, Signer } from "ethers";
+import { Wallet, Contract, Signer, utils } from "ethers";
 import axios from "axios"
 
 export class SafeProviderAdapter implements EthereumProvider {
     chainId: number
     createLibAddress = "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4"
-    createLibInterface = new Interface(["function performCreate(uint256,bytes)"])
-    safeInterface = new Interface(["function nonce() view returns(uint256)"])
+    createLibInterface = new utils.Interface(["function performCreate(uint256,bytes)"])
+    safeInterface = new utils.Interface(["function nonce() view returns(uint256)"])
     safeContract: Contract
     safe: string
     serviceUrl: string
@@ -19,9 +19,9 @@ export class SafeProviderAdapter implements EthereumProvider {
         this.chainId = chainId;
         this.wrapped = wrapped
         this.signer = signer
-        this.safe = getAddress(safe)
+        this.safe = utils.getAddress(safe)
         this.serviceUrl = serviceUrl ?? "https://safe-transaction.rinkeby.gnosis.io"
-        this.safeContract = new Contract(safe, this.safeInterface.formatJson(), this.signer)
+        this.safeContract = new Contract(safe, this.safeInterface, this.signer)
     }
 
     async estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any> {
@@ -64,7 +64,7 @@ export class SafeProviderAdapter implements EthereumProvider {
             }
             const nonce = (await this.safeContract.nonce()).toNumber()
             const safeTx = buildSafeTransaction({
-                to: getAddress(tx.to),
+                to: utils.getAddress(tx.to),
                 data: tx.data,
                 value: tx.value,
                 safeTxGas: 0,
@@ -73,7 +73,7 @@ export class SafeProviderAdapter implements EthereumProvider {
             })
             const estimation = await this.estimateSafeTx(this.safe, safeTx)
             safeTx.safeTxGas = estimation.safeTxGas
-            const safeTxHash = TypedDataEncoder.hash({
+            const safeTxHash = utils._TypedDataEncoder.hash({
                 chainId: this.chainId,
                 verifyingContract: this.safe,
             }, EIP712_SAFE_TX_TYPE, safeTx)
@@ -111,7 +111,7 @@ export class SafeProviderAdapter implements EthereumProvider {
                 resp.status = !!success ? "0x1" : "0x0"
                 if (safeTx.to.toLowerCase() === this.createLibAddress.toLowerCase()) {
                     const creationLog = resp.logs.find((log: any) => log.topics[0] === "0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511")
-                    resp.contractAddress = getAddress("0x" + creationLog.data.slice(creationLog.data.length - 40))
+                    resp.contractAddress = utils.getAddress("0x" + creationLog.data.slice(creationLog.data.length - 40))
                 }
                 return resp
             }

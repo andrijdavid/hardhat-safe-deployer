@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildSafeTransaction = exports.signHash = exports.EIP712_SAFE_TX_TYPE = void 0;
-const ethers_1 = require("ethers");
+const bytes_1 = require("@ethersproject/bytes");
 const constants_1 = require("@ethersproject/constants");
 exports.EIP712_SAFE_TX_TYPE = {
     // "SafeTx(address to,uint256 value,bytes data,uint8 operation,uint256 safeTxGas,uint256 baseGas,uint256 gasPrice,address gasToken,address refundReceiver,uint256 nonce)"
@@ -19,9 +19,9 @@ exports.EIP712_SAFE_TX_TYPE = {
     ]
 };
 const signHash = async (signer, hash) => {
-    const typedDataHash = ethers_1.utils.arrayify(hash);
+    const typedDataHash = (0, bytes_1.arrayify)(hash);
     return {
-        signer: signer.address,
+        signer: await signer.getAddress(),
         data: (await signer.signMessage(typedDataHash)).replace(/1b$/, "1f").replace(/1c$/, "20")
     };
 };
