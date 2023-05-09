@@ -2,8 +2,9 @@ import "@nomiclabs/hardhat-ethers";
 import { Signer, Wallet } from "ethers"
 import { extendEnvironment } from "hardhat/config"
 import { SafeProviderAdapter } from "./adapter"
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-export const setupSafeDeployer = (signer: Wallet | Signer, safe: string, serivceUrl?: string) => {
+export const setupSafeDeployer = (signer: Wallet | Signer, safe: string, serivceUrl?: string, hre?: HardhatRuntimeEnvironment) => {
     extendEnvironment((env) => {
         const { chainId } = env.network.config;
         if (!chainId) {
@@ -16,5 +17,6 @@ export const setupSafeDeployer = (signer: Wallet | Signer, safe: string, serivce
           chainId, 
           serivceUrl
         )
+        if(hre) hre.network.provider = env.network.provider
     })
 }
