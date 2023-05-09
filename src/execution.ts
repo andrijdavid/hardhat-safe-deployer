@@ -1,4 +1,4 @@
-import { Wallet, utils, BigNumber } from "ethers"
+import { Wallet,Signer, utils, BigNumber } from "ethers"
 import { AddressZero } from "@ethersproject/constants";
 
 export const EIP712_SAFE_TX_TYPE = {
@@ -38,10 +38,10 @@ export interface SafeSignature {
     data: string
 }
 
-export const signHash = async (signer: Wallet, hash: string): Promise<SafeSignature> => {
+export const signHash = async (signer: Wallet| Signer, hash: string): Promise<SafeSignature> => {
     const typedDataHash = utils.arrayify(hash)
     return {
-        signer: signer.address,
+        signer: await signer.getAddress(),
         data: (await signer.signMessage(typedDataHash)).replace(/1b$/, "1f").replace(/1c$/, "20")
     }
 }

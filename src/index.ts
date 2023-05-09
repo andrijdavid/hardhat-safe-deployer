@@ -1,9 +1,9 @@
 import "@nomiclabs/hardhat-ethers";
-import { Wallet } from "@ethersproject/wallet"
+import { Signer, Wallet } from "ethers"
 import { extendEnvironment } from "hardhat/config"
 import { SafeProviderAdapter } from "./adapter"
 
-export const setupSafeDeployer = (signer: Wallet, safe: string, serivceUrl?: string) => {
+export const setupSafeDeployer = (signer: Wallet | Signer, safe: string, serivceUrl?: string) => {
     extendEnvironment((env) => {
         const { chainId } = env.network.config;
         if (!chainId) {
