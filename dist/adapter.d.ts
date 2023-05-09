@@ -2,6 +2,7 @@ import { EthereumProvider, JsonRpcRequest, JsonRpcResponse, RequestArguments } f
 import { utils, Contract } from "ethers";
 import { SafeSignature, SafeTransaction } from "./execution";
 import { Wallet } from "@ethersproject/wallet";
+import { Signer } from "ethers/src.ts";
 export declare class SafeProviderAdapter implements EthereumProvider {
     chainId: number;
     createLibAddress: string;
@@ -10,10 +11,10 @@ export declare class SafeProviderAdapter implements EthereumProvider {
     safeContract: Contract;
     safe: string;
     serviceUrl: string;
-    signer: Wallet;
+    signer: Wallet| Signer;
     submittedTxs: Map<string, any>;
     wrapped: any;
-    constructor(wrapped: any, signer: Wallet, safe: string, chainId: number, serviceUrl?: string);
+    constructor(wrapped: any, signer: Wallet| Signer, safe: string, chainId: number, serviceUrl?: string);
     estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any>;
     getSafeTxDetails(safeTxHash: string): Promise<any>;
     proposeTx(safeTxHash: string, safeTx: SafeTransaction, signature: SafeSignature): Promise<String>;
