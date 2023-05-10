@@ -5,6 +5,15 @@ import { SafeProviderAdapter } from "./adapter"
 
 export const setupSafeDeployer = (payload: { signer: Wallet | Signer | undefined, safe: string, serivceUrl: string | undefined }) => {
   extendEnvironment(async (env) => {
+    let done = false;
+    let fetchedSigner = undefined;
+    env.ethers.getSigners().then(signers=>{
+      done = true
+      fetchedSigner = signers[0]
+    })
+    while (!done) {
+      // do nothing, just wait
+    }
     const { safe, serivceUrl } = payload
     const { chainId } = env.network.config;
     if (!chainId) {
