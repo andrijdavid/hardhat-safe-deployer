@@ -11,6 +11,9 @@ const setupSafeDeployer = (payload) => {
         if (!chainId) {
             throw new Error('The chainId was required in hardhat network config');
         }
+        // do-not setup safe if using hardhat local network
+        if (env.network.name === "hardhat")
+            return;
         env.network.provider = new adapter_1.SafeProviderAdapter(env.network.provider, payload.signer.connect(env.ethers.provider), safe, chainId, serivceUrl);
     });
 };
