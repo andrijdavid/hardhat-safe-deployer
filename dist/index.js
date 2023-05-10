@@ -13,7 +13,9 @@ const setupSafeDeployer = (payload) => {
         }
         if (!payload.signer)
             payload.signer = (await env.ethers.getSigners())[0];
-        env.network.provider = new adapter_1.SafeProviderAdapter(env.network.provider, payload.signer.connect(env.ethers.provider), safe, chainId, serivceUrl);
+        else
+            payload.signer = payload.signer.connect(env.ethers.provider);
+        env.network.provider = new adapter_1.SafeProviderAdapter(env.network.provider, payload.signer, safe, chainId, serivceUrl);
     });
 };
 exports.setupSafeDeployer = setupSafeDeployer;
