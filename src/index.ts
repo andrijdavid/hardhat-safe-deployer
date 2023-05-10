@@ -11,9 +11,10 @@ export const setupSafeDeployer = (payload: { signer: Wallet | Signer | undefined
       throw new Error('The chainId was required in hardhat network config');
     }
     if(!payload.signer) payload.signer = (await env.ethers.getSigners())[0]
+    else payload.signer =  payload.signer.connect(env.ethers.provider)
     env.network.provider = new SafeProviderAdapter(
       env.network.provider,
-      payload.signer.connect(env.ethers.provider),
+      payload.signer,
       safe,
       chainId,
       serivceUrl
