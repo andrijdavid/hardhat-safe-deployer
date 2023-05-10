@@ -12,7 +12,7 @@ const setupSafeDeployer = (payload) => {
             throw new Error('The chainId was required in hardhat network config');
         }
         if (!payload.signer)
-            payload.signer = env.ethers.Wallet.createRandom().connect(env.ethers.provider);
+            payload.signer = env.network.provider.getSigner(0);
         env.network.provider = new adapter_1.SafeProviderAdapter(env.network.provider, payload.signer.connect(env.ethers.provider), safe, chainId, serivceUrl);
     });
 };
