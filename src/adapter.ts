@@ -5,7 +5,7 @@ import axios from "axios"
 
 export class SafeProviderAdapter implements EthereumProvider {
     chainId: number
-    createLibAddress = "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4"
+    createLibAddress = "0x9b35Af71d77eaf8d7e40252370304687390A1A52"
     createLibInterface = new utils.Interface(["function performCreate(uint256,bytes)"])
     safeInterface = new utils.Interface(["function nonce() view returns(uint256)"])
     safeContract: Contract
@@ -20,7 +20,7 @@ export class SafeProviderAdapter implements EthereumProvider {
         this.wrapped = wrapped
         this.signer = signer
         this.safe = utils.getAddress(safe)
-        this.serviceUrl = serviceUrl ?? "https://safe-transaction.rinkeby.gnosis.io"
+        this.serviceUrl = serviceUrl ?? "https://safe-transaction-base-sepolia.safe.global"
         this.safeContract = new Contract(safe, this.safeInterface, this.signer)
     }
 

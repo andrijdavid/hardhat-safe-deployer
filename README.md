@@ -1,7 +1,7 @@
 # Hardhat Safe Deployer
 
 ## Usage
-- Install hardhat plugin with `yarn add github://rmeissner/hardhat-safe-deployer`
+- Install hardhat plugin with `yarn add github://andrijdavid/hardhat-safe-deployer`
 - Import `import { setupSafeDeployer } from "hardhat-safe-deployer";` in your `hardhat.config.ts`
 - Setup deployer by calling `setupSafeDeployer`. The methods expects the following parameter
   - an Ethers Wallet for an owner/ delegate of the deployer Safe
