@@ -9,7 +9,7 @@ const ethers_1 = require("ethers");
 const axios_1 = __importDefault(require("axios"));
 class SafeProviderAdapter {
     constructor(wrapped, signer, safe, chainId, serviceUrl) {
-        this.createLibAddress = "0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4";
+        this.createLibAddress = "0x9b35Af71d77eaf8d7e40252370304687390A1A52";
         this.createLibInterface = new ethers_1.utils.Interface(["function performCreate(uint256,bytes)"]);
         this.safeInterface = new ethers_1.utils.Interface(["function nonce() view returns(uint256)"]);
         this.submittedTxs = new Map();
@@ -17,7 +17,7 @@ class SafeProviderAdapter {
         this.wrapped = wrapped;
         this.signer = signer;
         this.safe = ethers_1.utils.getAddress(safe);
-        this.serviceUrl = serviceUrl !== null && serviceUrl !== void 0 ? serviceUrl : "https://safe-transaction.rinkeby.gnosis.io";
+        this.serviceUrl = serviceUrl !== null && serviceUrl !== void 0 ? serviceUrl : "https://safe-transaction-base-sepolia.safe.global";
         this.safeContract = new ethers_1.Contract(safe, this.safeInterface, this.signer);
     }
     async estimateSafeTx(safe, safeTx) {
