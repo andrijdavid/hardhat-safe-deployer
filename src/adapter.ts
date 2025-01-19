@@ -26,7 +26,7 @@ export class SafeProviderAdapter implements EthereumProvider {
 
     async estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any> {
         const url = `${this.serviceUrl}/api/v1/safes/${safe}/multisig-transactions/estimations/`
-        const resp = await axios.post(url, safeTx)
+        const resp = await axios.post(url, safeTx);
         return resp.data
     }
 
@@ -44,8 +44,25 @@ export class SafeProviderAdapter implements EthereumProvider {
             sender: signature.signer,
             signature: signature.data
         }
-        const resp = await axios.post(url, data)
-        return resp.data
+        try {
+            const resp = await axios.post(url, data);
+            return resp.data;
+        } catch (error) {
+            console.error("Axios POST request failed: ", error);
+            if (error.response) {
+                // Server responded with a status other than 2xx
+                console.error("Response data: ", error.response.data);
+                console.error("Response status: ", error.response.status);
+                console.error("Response headers: ", error.response.headers);
+            } else if (error.request) {
+                // Request was made but no response received
+                console.error("Request data: ", error.request);
+            } else {
+                // Something happened while setting up the request
+                console.error("Error message: ", error.message);
+            }
+            throw error; // Re-throw the error after logging it
+        }
     }
 
     sendAsync(payload: JsonRpcRequest, callback: (error: any, response: JsonRpcResponse) => void): void {
@@ -110,8 +127,8 @@ export class SafeProviderAdapter implements EthereumProvider {
                 const success = resp.logs.find((log: any) => log.topics[0] === "0x442e715f626346e8c54381002da614f62bee8d27386535b2521ec8540898556e")
                 resp.status = !!success ? "0x1" : "0x0"
                 if (safeTx.to.toLowerCase() === this.createLibAddress.toLowerCase()) {
-                    const creationLog = resp.logs.find((log: any) => log.topics[0] === "0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511")
-                    resp.contractAddress = utils.getAddress("0x" + creationLog.data.slice(creationLog.data.length - 40))
+                    const creationLog = resp.logs.find((log: any) => log.topics[0] === "0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511");
+                    resp.contractAddress = utils.getAddress("0x" + creationLog.topics[1].slice(creationLog.topics[1].length - 40))
                 }
                 return resp
             }

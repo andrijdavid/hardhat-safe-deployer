@@ -33,8 +33,28 @@ class SafeProviderAdapter {
     async proposeTx(safeTxHash, safeTx, signature) {
         const url = `${this.serviceUrl}/api/v1/safes/${this.safe}/multisig-transactions/`;
         const data = Object.assign(Object.assign({}, safeTx), { contractTransactionHash: safeTxHash, sender: signature.signer, signature: signature.data });
-        const resp = await axios_1.default.post(url, data);
-        return resp.data;
+        try {
+            const resp = await axios_1.default.post(url, data);
+            return resp.data;
+        }
+        catch (error) {
+            console.error("Axios POST request failed: ", error);
+            if (error.response) {
+                // Server responded with a status other than 2xx
+                console.error("Response data: ", error.response.data);
+                console.error("Response status: ", error.response.status);
+                console.error("Response headers: ", error.response.headers);
+            }
+            else if (error.request) {
+                // Request was made but no response received
+                console.error("Request data: ", error.request);
+            }
+            else {
+                // Something happened while setting up the request
+                console.error("Error message: ", error.message);
+            }
+            throw error; // Re-throw the error after logging it
+        }
     }
     sendAsync(payload, callback) {
         return this.wrapped.sendAsync(payload, callback);
@@ -103,7 +123,7 @@ class SafeProviderAdapter {
                 resp.status = !!success ? "0x1" : "0x0";
                 if (safeTx.to.toLowerCase() === this.createLibAddress.toLowerCase()) {
                     const creationLog = resp.logs.find((log) => log.topics[0] === "0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511");
-                    resp.contractAddress = ethers_1.utils.getAddress("0x" + creationLog.data.slice(creationLog.data.length - 40));
+                    resp.contractAddress = ethers_1.utils.getAddress("0x" + creationLog.topics[1].slice(creationLog.topics[1].length - 40));
                 }
                 return resp;
             }
