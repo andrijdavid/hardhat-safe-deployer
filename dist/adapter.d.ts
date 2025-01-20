@@ -5,14 +5,16 @@ export declare class SafeProviderAdapter implements EthereumProvider {
     chainId: number;
     createLibAddress: string;
     createLibInterface: utils.Interface;
+    createLibInterface2: utils.Interface;
     safeInterface: utils.Interface;
     safeContract: Contract;
     safe: string;
     serviceUrl: string;
     signer: Wallet | Signer;
     submittedTxs: Map<string, any>;
+    salt: string | undefined;
     wrapped: any;
-    constructor(wrapped: any, signer: Wallet | Signer, safe: string, chainId: number, serviceUrl?: string);
+    constructor(wrapped: any, signer: Wallet | Signer, safe: string, chainId: number, serviceUrl?: string, salt?: string);
     estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any>;
     getSafeTxDetails(safeTxHash: string): Promise<any>;
     proposeTx(safeTxHash: string, safeTx: SafeTransaction, signature: SafeSignature): Promise<String>;

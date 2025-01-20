@@ -8,9 +8,10 @@ const execution_1 = require("./execution");
 const ethers_1 = require("ethers");
 const axios_1 = __importDefault(require("axios"));
 class SafeProviderAdapter {
-    constructor(wrapped, signer, safe, chainId, serviceUrl) {
+    constructor(wrapped, signer, safe, chainId, serviceUrl, salt) {
         this.createLibAddress = "0x9b35Af71d77eaf8d7e40252370304687390A1A52";
         this.createLibInterface = new ethers_1.utils.Interface(["function performCreate(uint256,bytes)"]);
+        this.createLibInterface2 = new ethers_1.utils.Interface(["function performCreate2(uint256,bytes,bytes32)"]);
         this.safeInterface = new ethers_1.utils.Interface(["function nonce() view returns(uint256)"]);
         this.submittedTxs = new Map();
         this.chainId = chainId;
@@ -19,6 +20,7 @@ class SafeProviderAdapter {
         this.safe = ethers_1.utils.getAddress(safe);
         this.serviceUrl = serviceUrl !== null && serviceUrl !== void 0 ? serviceUrl : "https://safe-transaction-base-sepolia.safe.global";
         this.safeContract = new ethers_1.Contract(safe, this.safeInterface, this.signer);
+        this.salt = salt !== null && salt !== void 0 ? salt : undefined;
     }
     async estimateSafeTx(safe, safeTx) {
         const url = `${this.serviceUrl}/api/v1/safes/${safe}/multisig-transactions/estimations/`;
@@ -65,8 +67,14 @@ class SafeProviderAdapter {
             const tx = args.params[0];
             let operation = 0;
             if (!tx.to) {
+                if (this.salt) {
+                    const salt = ethers_1.utils.formatBytes32String(this.salt);
+                    tx.data = this.createLibInterface2.encodeFunctionData("performCreate2", [tx.value || 0, tx.data, salt]);
+                }
+                else {
+                    tx.data = this.createLibInterface.encodeFunctionData("performCreate", [tx.value || 0, tx.data]);
+                }
                 tx.to = this.createLibAddress;
-                tx.data = this.createLibInterface.encodeFunctionData("performCreate", [tx.value || 0, tx.data]);
                 tx.value = 0;
                 operation = 1;
             }

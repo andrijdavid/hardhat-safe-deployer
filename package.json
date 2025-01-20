@@ -1,8 +1,8 @@
 {
   "name": "hardhat-safe-deployer",
-  "version": "1.0.0",
-  "description": "Hardhat plugin to deploy via Safe",
-  "homepage": "https://github.com/rmeissner/hardhat-safe-deployer/",
+  "version": "0.1.0",
+  "description": "Hardhat plugin to deploy smart-contract via Safe",
+  "homepage": "https://github.com/andrijdavid/hardhat-safe-deployer/",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -23,16 +23,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rmeissner/hardhat-safe-deployer.git"
+    "url": "git+https://github.com/andrijdavid/hardhat-safe-deployer.git"
   },
   "keywords": [
     "Ethereum",
     "Hardhat",
     "Safe"
   ],
-  "author": "rimeissner.dev@gmail.com",
+  "author": "david@geek.mg",
   "bugs": {
-    "url": "https://github.com/rmeissner/hardhat-safe-deployer/issues"
+    "url": "https://github.com/andrijdavid/hardhat-safe-deployer/issues"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
@@ -53,7 +53,7 @@
     "axios": "^0.21.1",
     "dotenv": "^8.0.0",
     "ethers": "^5.7.2",
-    "solc": "0.7.6",
+    "solc": "^0.7.6",
     "yargs": "^16.1.1"
   }
 }

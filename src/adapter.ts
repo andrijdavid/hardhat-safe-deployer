@@ -7,21 +7,24 @@ export class SafeProviderAdapter implements EthereumProvider {
     chainId: number
     createLibAddress = "0x9b35Af71d77eaf8d7e40252370304687390A1A52"
     createLibInterface = new utils.Interface(["function performCreate(uint256,bytes)"])
+    createLibInterface2 = new utils.Interface(["function performCreate2(uint256,bytes,bytes32)"])
     safeInterface = new utils.Interface(["function nonce() view returns(uint256)"])
     safeContract: Contract
     safe: string
     serviceUrl: string
     signer: Wallet| Signer
     submittedTxs = new Map<string, any>()
+    salt:string | undefined
     wrapped: any
 
-    constructor(wrapped: any, signer: Wallet| Signer, safe: string, chainId: number, serviceUrl?: string) {
+    constructor(wrapped: any, signer: Wallet| Signer, safe: string, chainId: number, serviceUrl?: string, salt?:string) {
         this.chainId = chainId;
         this.wrapped = wrapped
         this.signer = signer
         this.safe = utils.getAddress(safe)
         this.serviceUrl = serviceUrl ?? "https://safe-transaction-base-sepolia.safe.global"
         this.safeContract = new Contract(safe, this.safeInterface, this.signer)
+        this.salt = salt ?? undefined
     }
 
     async estimateSafeTx(safe: string, safeTx: SafeTransaction): Promise<any> {
@@ -74,8 +77,14 @@ export class SafeProviderAdapter implements EthereumProvider {
             const tx = (args.params as any)[0]
             let operation = 0
             if (!tx.to) {
+                if(this.salt){
+                    const salt = utils.formatBytes32String(this.salt);
+                    tx.data = this.createLibInterface2.encodeFunctionData("performCreate2", [tx.value || 0, tx.data, salt])    
+                }
+                else {
+                    tx.data = this.createLibInterface.encodeFunctionData("performCreate", [tx.value || 0, tx.data])
+                }
                 tx.to = this.createLibAddress
-                tx.data = this.createLibInterface.encodeFunctionData("performCreate", [tx.value || 0, tx.data])
                 tx.value = 0
                 operation = 1
             }

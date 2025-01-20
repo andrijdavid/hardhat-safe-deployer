@@ -4,6 +4,7 @@ node_modules/
 deployments/
 env/
 .env
+.husky
 bin/
 solc
 coverage/
